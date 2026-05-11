@@ -1,0 +1,13 @@
+{
+  "crons": [
+    {
+      "path": "/api/devices/sync",
+      "schedule": "*/5 * * * *"
+    }
+  ],
+  "functions": {
+    "src/app/api/**": {
+      "maxDuration": 30
+    }
+  }
+}

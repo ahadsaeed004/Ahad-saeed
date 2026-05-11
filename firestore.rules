@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ────────────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'hr'];
+    }
+
+    function isViewer() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    // ── employees ───────────────────────────────────────────────────────────
+    match /employees/{employeeId} {
+      allow read: if isViewer();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ── attendance_logs ─────────────────────────────────────────────────────
+    // Write only via Admin SDK (server-side) — no direct client writes
+    match /attendance_logs/{logId} {
+      allow read: if isViewer();
+      allow write: if false; // Server-side only via Admin SDK
+    }
+
+    // ── devices ─────────────────────────────────────────────────────────────
+    match /devices/{deviceId} {
+      allow read: if isViewer();
+      allow write: if isAdmin();
+    }
+
+    // ── users (admin metadata) ──────────────────────────────────────────────
+    match /users/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAdmin();
+    }
+  }
+}

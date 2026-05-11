@@ -1,0 +1,64 @@
+{
+  "employees": [
+    {
+      "name": "Ali Hassan",
+      "employeeCode": "E001",
+      "department": "Engineering",
+      "position": "Senior Engineer",
+      "email": "ali@company.com",
+      "phone": "+92 300 1111111"
+    },
+    {
+      "name": "Sara Khan",
+      "employeeCode": "E002",
+      "department": "HR",
+      "position": "HR Manager",
+      "email": "sara@company.com",
+      "phone": "+92 300 2222222"
+    },
+    {
+      "name": "Usman Ahmed",
+      "employeeCode": "E003",
+      "department": "Finance",
+      "position": "Accountant",
+      "email": "usman@company.com",
+      "phone": "+92 300 3333333"
+    },
+    {
+      "name": "Fatima Malik",
+      "employeeCode": "E004",
+      "department": "Engineering",
+      "position": "Frontend Developer",
+      "email": "fatima@company.com",
+      "phone": "+92 300 4444444"
+    },
+    {
+      "name": "Bilal Raza",
+      "employeeCode": "E005",
+      "department": "Operations",
+      "position": "Operations Lead",
+      "email": "bilal@company.com",
+      "phone": "+92 300 5555555"
+    }
+  ],
+  "devices": [
+    {
+      "name": "Main Entrance",
+      "ipAddress": "192.168.1.100",
+      "port": 8080,
+      "location": "Ground Floor",
+      "deviceModel": "ZKTeco SpeedFace-V5L",
+      "integrationMode": "api",
+      "status": "online"
+    },
+    {
+      "name": "Server Room",
+      "ipAddress": "192.168.1.101",
+      "port": 8080,
+      "location": "3rd Floor",
+      "deviceModel": "ZKTeco F22",
+      "integrationMode": "push",
+      "status": "offline"
+    }
+  ]
+}
