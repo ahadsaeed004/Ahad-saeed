@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Topbar } from "@/components/layout/Topbar";
 import { useAuth } from "@/hooks/useAuth";
 import { useEmployees } from "@/hooks/useEmployees";
-import { apiFetch, formatDateTime, cn, exportToCSV } from "@/lib/utils";
+import { formatDateTime, cn, exportToCSV } from "@/lib/utils";
 import toast from "react-hot-toast";
 import type { AttendanceLog, PaginatedResponse } from "@/types";
 
@@ -23,7 +23,9 @@ export default function AttendancePage() {
   // Filters
   const now = new Date();
   const today = now.toISOString().slice(0, 10);
-  const sevenDaysAgo = new Date(now.setDate(now.getDate() - 7)).toISOString().slice(0, 10);
+  const pastDate = new Date();
+  pastDate.setDate(now.getDate() - 7);
+  const sevenDaysAgo = pastDate.toISOString().slice(0, 10);
   
   const [startDate, setStartDate] = useState(sevenDaysAgo);
   const [endDate, setEndDate] = useState(today);

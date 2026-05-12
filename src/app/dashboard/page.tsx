@@ -5,7 +5,6 @@ import { Topbar } from "@/components/layout/Topbar";
 import { StatCard } from "@/components/ui/StatCard";
 import { LiveAttendanceFeed } from "@/components/dashboard/LiveAttendanceFeed";
 import { useAuth } from "@/hooks/useAuth";
-import { apiFetch } from "@/lib/utils";
 import type { DashboardStats } from "@/types";
 import { seedDemoData } from "@/lib/firebase/seed";
 import toast from "react-hot-toast";

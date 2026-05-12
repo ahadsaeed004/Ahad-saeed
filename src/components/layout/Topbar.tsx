@@ -3,6 +3,8 @@
 import { useAuth } from "@/hooks/useAuth";
 import { formatDate } from "@/lib/utils";
 
+import Image from "next/image";
+
 interface TopbarProps {
   title: string;
   subtitle?: string;
@@ -35,10 +37,12 @@ export function Topbar({ title, subtitle, actions }: TopbarProps) {
           {user && (
             <div className="flex items-center gap-2.5">
               {user.photoURL ? (
-                <img
+                <Image
                   src={user.photoURL}
                   alt={user.displayName ?? "User"}
-                  className="w-7 h-7 rounded-full border border-slate-700"
+                  width={28}
+                  height={28}
+                  className="rounded-full border border-slate-700"
                 />
               ) : (
                 <div className="w-7 h-7 rounded-full bg-brand-600/30 border border-brand-500/30 flex items-center justify-center">

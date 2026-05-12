@@ -1,6 +1,20 @@
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
+import { DM_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
+
+const spaceMono = Space_Mono({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-space-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "AttendSync — Biometric Attendance Management",
@@ -13,15 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Space+Mono:wght@400;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className={`dark ${dmSans.variable} ${spaceMono.variable}`}>
       <body className="bg-slate-950 text-slate-100 antialiased font-sans min-h-screen">
         {children}
         <Toaster
