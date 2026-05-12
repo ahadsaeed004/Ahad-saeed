@@ -352,3 +352,4 @@ firebase deploy --only firestore:rules,firestore:indexes
      return new YourBrandAdapter(device);
    ```
 4. Add the mode to the Zod schema in `src/lib/validations/index.ts`
+# attendence
