@@ -1,39 +1,60 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+// ─────────────────────────────────────────────────────────────────────────────
+// Firebase client – LAZY initialisation
+//
+// Next.js runs every imported module on the server during static pre-rendering.
+// Calling initializeApp() / getAuth() at module scope throws auth/invalid-api-key
+// because NEXT_PUBLIC_* vars are absent on the build server.
+//
+// Solution: export getter functions; Firebase is only initialised when a getter
+// is first called, which only happens inside browser-side React hooks/effects.
+// ─────────────────────────────────────────────────────────────────────────────
 
-const requiredVars = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-};
+import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 
-// Warn clearly in dev if .env.local is not configured
-if (typeof window !== "undefined") {
-  const missing = Object.entries(requiredVars)
-    .filter(([, v]) => !v)
-    .map(([k]) => `NEXT_PUBLIC_FIREBASE_${k.replace(/([A-Z])/g, "_$1").toUpperCase()}`);
+let _app: FirebaseApp | undefined;
+let _auth: Auth | undefined;
+let _db: Firestore | undefined;
+let _storage: FirebaseStorage | undefined;
 
-  if (missing.length > 0) {
-    console.error(
-      `[Firebase] Missing environment variables:\n${missing.join("\n")}\n\n` +
-      `Copy .env.example to .env.local and fill in your Firebase project credentials.\n` +
-      `Get them from: Firebase Console → Project Settings → Your Apps`
-    );
+function initApp(): FirebaseApp {
+  if (_app) return _app;
+  const config = {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  };
+  if (typeof window !== "undefined") {
+    const missing = Object.entries(config)
+      .filter(([, v]) => !v)
+      .map(([k]) => `NEXT_PUBLIC_FIREBASE_${k.replace(/([A-Z])/g, "_$1").toUpperCase()}`);
+    if (missing.length > 0) {
+      console.error(
+        `[Firebase] Missing env vars:\n${missing.join("\n")}\n` +
+        `Copy .env.example to .env.local and restart the dev server.`
+      );
+    }
   }
+  _app = getApps().length ? getApp() : initializeApp(config);
+  return _app;
 }
 
-const firebaseConfig = requiredVars;
+export function getClientAuth(): Auth {
+  if (!_auth) _auth = getAuth(initApp());
+  return _auth;
+}
 
-// Prevent re-initialization in hot-reload / multiple imports
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+export function getClientDb(): Firestore {
+  if (!_db) _db = getFirestore(initApp());
+  return _db;
+}
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
-
-export default app;
+export function getClientStorage(): FirebaseStorage {
+  if (!_storage) _storage = getStorage(initApp());
+  return _storage;
+}

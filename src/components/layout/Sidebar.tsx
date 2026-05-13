@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase/client";
+import { getClientAuth } from "@/lib/firebase/client";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 
@@ -61,7 +61,7 @@ export function Sidebar() {
 
   async function handleSignOut() {
     try {
-      await signOut(auth);
+      await signOut(getClientAuth());
       router.replace("/login");
     } catch {
       toast.error("Failed to sign out");

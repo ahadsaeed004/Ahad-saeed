@@ -5,7 +5,6 @@ import {
   where,
   orderBy,
   limit,
-  startAfter,
   getDocs,
   getDoc,
   addDoc,
@@ -18,7 +17,7 @@ import {
   writeBatch,
   type Unsubscribe,
 } from "firebase/firestore";
-import { db } from "./client";
+import { getClientDb } from "./client";
 import type {
   Employee,
   AttendanceLog,
@@ -94,7 +93,7 @@ function docToDevice(snap: DocumentSnapshot): Device {
 // ─── Employee Queries ─────────────────────────────────────────────────────────
 export async function fetchEmployees(): Promise<Employee[]> {
   const q = query(
-    collection(db, COLLECTIONS.EMPLOYEES),
+    collection(getClientDb(), COLLECTIONS.EMPLOYEES),
     where("isActive", "==", true),
     orderBy("name", "asc")
   );
@@ -106,7 +105,7 @@ export async function fetchEmployeeByCode(
   code: string
 ): Promise<Employee | null> {
   const q = query(
-    collection(db, COLLECTIONS.EMPLOYEES),
+    collection(getClientDb(), COLLECTIONS.EMPLOYEES),
     where("employeeCode", "==", code),
     limit(1)
   );
@@ -119,7 +118,7 @@ export function subscribeToEmployees(
   callback: (employees: Employee[]) => void
 ): Unsubscribe {
   const q = query(
-    collection(db, COLLECTIONS.EMPLOYEES),
+    collection(getClientDb(), COLLECTIONS.EMPLOYEES),
     where("isActive", "==", true),
     orderBy("name", "asc")
   );
@@ -154,7 +153,7 @@ export async function fetchAttendanceLogs(
 
   constraints.push(limit(pageSize + 1)); // fetch one extra to know if hasMore
 
-  const q = query(collection(db, COLLECTIONS.ATTENDANCE_LOGS), ...constraints);
+  const q = query(collection(getClientDb(), COLLECTIONS.ATTENDANCE_LOGS), ...constraints);
   const snap = await getDocs(q);
   const docs = snap.docs.map(docToAttendanceLog);
   const hasMore = docs.length > pageSize;
@@ -177,7 +176,7 @@ export function subscribeToTodayAttendance(
   todayEnd.setHours(23, 59, 59, 999);
 
   const q = query(
-    collection(db, COLLECTIONS.ATTENDANCE_LOGS),
+    collection(getClientDb(), COLLECTIONS.ATTENDANCE_LOGS),
     where("timestamp", ">=", todayStart.toISOString()),
     where("timestamp", "<=", todayEnd.toISOString()),
     orderBy("timestamp", "desc"),
@@ -192,7 +191,7 @@ export function subscribeToTodayAttendance(
 // ─── Device Queries ───────────────────────────────────────────────────────────
 export async function fetchDevices(): Promise<Device[]> {
   const q = query(
-    collection(db, COLLECTIONS.DEVICES),
+    collection(getClientDb(), COLLECTIONS.DEVICES),
     orderBy("name", "asc")
   );
   const snap = await getDocs(q);
@@ -203,7 +202,7 @@ export function subscribeToDevices(
   callback: (devices: Device[]) => void
 ): Unsubscribe {
   const q = query(
-    collection(db, COLLECTIONS.DEVICES),
+    collection(getClientDb(), COLLECTIONS.DEVICES),
     orderBy("name", "asc")
   );
   return onSnapshot(q, (snap) => {

@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState } from "react";
 import { Topbar } from "@/components/layout/Topbar";
 import { useEmployees } from "@/hooks/useEmployees";

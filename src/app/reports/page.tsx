@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect, useCallback } from "react";
 import { Topbar } from "@/components/layout/Topbar";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,7 +17,7 @@ import {
   Legend,
 } from "recharts";
 import toast from "react-hot-toast";
-import type { DailyReport, MonthlyReportEntry } from "@/types";
+import type { MonthlyReportEntry } from "@/types";
 
 // ─── Custom Tooltip ───────────────────────────────────────────────────────────
 function CustomTooltip({ active, payload, label }: {
@@ -103,8 +105,8 @@ export default function ReportsPage() {
       let totalEmployees = 0;
       try {
         const { getDocs, collection, query, where } = await import("firebase/firestore");
-        const { db } = await import("@/lib/firebase/client");
-        const empSnap = await getDocs(query(collection(db, "employees"), where("isActive", "==", true)));
+        const { getClientDb } = await import("@/lib/firebase/client");
+        const empSnap = await getDocs(query(collection(getClientDb(), "employees"), where("isActive", "==", true)));
         totalEmployees = empSnap.size;
       } catch { /* ignore */ }
 
@@ -151,7 +153,7 @@ export default function ReportsPage() {
       const lastDay = new Date(year, month, 0).getDate();
       const endDate = `${year}-${String(month).padStart(2, "0")}-${lastDay}T23:59:59.999Z`;
 
-      const result = await apiFetch<{ data: Array<Record<string, unknown>> }>(
+      const result = await apiFetch<{ data: Array<Record<string, unknown>>; total: number; hasMore: boolean }>(
         `/api/attendance?startDate=${startDate}&endDate=${endDate}&limit=2000`,
         { token }
       );

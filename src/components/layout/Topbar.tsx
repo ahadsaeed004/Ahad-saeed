@@ -42,6 +42,7 @@ export function Topbar({ title, subtitle, actions }: TopbarProps) {
                   alt={user.displayName ?? "User"}
                   width={28}
                   height={28}
+                  unoptimized
                   className="rounded-full border border-slate-700"
                 />
               ) : (

@@ -7,7 +7,7 @@ import {
   where, 
   onSnapshot,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase/client";
+import { getClientDb } from "@/lib/firebase/client";
 import { COLLECTIONS } from "@/lib/firebase/firestore";
 import type { DashboardStats, Employee, AttendanceLog } from "@/types";
 
@@ -59,7 +59,7 @@ export function useDashboardStats() {
   useEffect(() => {
     // 1. Subscribe to Active Employees
     const employeesQuery = query(
-      collection(db, COLLECTIONS.EMPLOYEES),
+      collection(getClientDb(), COLLECTIONS.EMPLOYEES),
       where("isActive", "==", true)
     );
 
@@ -69,17 +69,44 @@ export function useDashboardStats() {
     const todayStr = today.toISOString();
     
     const logsQuery = query(
-      collection(db, COLLECTIONS.ATTENDANCE_LOGS),
+      collection(getClientDb(), COLLECTIONS.ATTENDANCE_LOGS),
       where("timestamp", ">=", todayStr)
     );
 
     const unsubEmployees = onSnapshot(employeesQuery, (snap) => {
-      const emps = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Employee));
+      const emps = snap.docs.map(doc => {
+        const d = doc.data();
+        return {
+          id: doc.id,
+          name: d.name,
+          employeeCode: d.employeeCode,
+          department: d.department,
+          email: d.email,
+          phone: d.phone,
+          position: d.position,
+          isActive: d.isActive ?? true,
+          createdAt: d.createdAt?.toDate?.()?.toISOString?.() ?? new Date().toISOString(),
+          updatedAt: d.updatedAt?.toDate?.()?.toISOString?.() ?? new Date().toISOString(),
+        } as Employee;
+      });
       setEmployees(emps);
     });
 
     const unsubLogs = onSnapshot(logsQuery, (snap) => {
-      const lgs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as AttendanceLog));
+      const lgs = snap.docs.map(doc => {
+        const d = doc.data();
+        return {
+          id: doc.id,
+          employeeId: d.employeeId,
+          employeeCode: d.employeeCode,
+          employeeName: d.employeeName,
+          timestamp: d.timestamp?.toDate?.()?.toISOString?.() ?? d.timestamp ?? new Date().toISOString(),
+          type: d.type,
+          deviceId: d.deviceId,
+          rawData: d.rawData,
+          createdAt: d.createdAt?.toDate?.()?.toISOString?.() ?? new Date().toISOString(),
+        } as AttendanceLog;
+      });
       setLogs(lgs);
       setLoading(false);
     });

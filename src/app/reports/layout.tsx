@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import DashboardLayout from "@/app/dashboard/layout";
 
 export default function ReportsLayout({ children }: { children: React.ReactNode }) {

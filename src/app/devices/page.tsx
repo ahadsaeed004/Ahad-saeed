@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect } from "react";
 import { Topbar } from "@/components/layout/Topbar";
 import { fetchDevices, subscribeToDevices } from "@/lib/firebase/firestore";

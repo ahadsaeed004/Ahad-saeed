@@ -1,17 +1,17 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect, useCallback } from "react";
 import { Topbar } from "@/components/layout/Topbar";
-import { useAuth } from "@/hooks/useAuth";
 import { useEmployees } from "@/hooks/useEmployees";
 import { formatDateTime, cn, exportToCSV } from "@/lib/utils";
 import toast from "react-hot-toast";
-import type { AttendanceLog, PaginatedResponse } from "@/types";
+import type { AttendanceLog } from "@/types";
 
 const PAGE_SIZE = 50;
 
 export default function AttendancePage() {
-  const { token } = useAuth();
   const { employees } = useEmployees();
 
   const [logs, setLogs] = useState<AttendanceLog[]>([]);
